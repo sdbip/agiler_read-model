@@ -1,28 +1,11 @@
 import { assert } from 'chai'
 import { promises as fs } from 'fs'
-import http, { IncomingMessage } from 'http'
+import http from 'http'
 import pg from 'pg'
 import { DATABASE, PORT } from '../src/config'
+import { close } from '../src/index'
 
-import express, { json, urlencoded, Router } from 'express'
-import { createServer } from 'http'
-
-const app = express()
-
-app.use(json())
-app.use(urlencoded({ extended: false }))
-
-const router = Router()
-router.get('/', (req: unknown, res: any) => {
-  res.json({ message: 'alive', test: process.env.TEST })
-})
-app.use('/', router)
-
-const port = process.env.PORT ?? 80
-const server = createServer(app)
-
-
-describe('GET /item', () => {
+describe('GET /', () => {
 
   before(async () => {
     const data = await fs.readFile('./test/items.sql')
@@ -32,18 +15,16 @@ describe('GET /item', () => {
     await client.connect()
     await client.query(schemaSQL)
     await client.end()
-
-    server.listen(port)
   })
 
   after(() => {
-    server.close()
+    close()
   })
 
-  it('can connect', async () => {
+  it('can retrieve all items', async () => {
     const response = await get(`http://localhost:${PORT}`)
 
-    assert.equal(response.statusCode, 200)
+//    assert.equal(response.statusCode, 200)
     assert.deepEqual(response.content, { message: 'alive' })
   })
 })
@@ -65,7 +46,7 @@ type ResponseData = {
   content: any
 }
 
-function readResponse(response: IncomingMessage): Promise<ResponseData> {
+function readResponse(response: http.IncomingMessage): Promise<ResponseData> {
   return new Promise((resolve) => {
     let result = ''
     response.setEncoding('utf-8')
