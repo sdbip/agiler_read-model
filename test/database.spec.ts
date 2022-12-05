@@ -1,8 +1,7 @@
 import { assert } from 'chai'
-import { env } from 'process'
 import pg from 'pg'
+import { DATABASE } from '../src/config'
 
-const DATABASE = env['DATABASE']
 describe('Database Configuration', () => {
 
   const client = new pg.Client({
