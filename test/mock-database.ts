@@ -1,4 +1,6 @@
-import { Database, ItemDTO, ItemSpecification } from '../src/pg-database'
+import { ItemSpecification } from '../src/item-specification.js'
+import { Database } from '../src/database.js'
+import { ItemDTO } from '../src/item-dto.js'
 
 export class MockDatabase implements Database {
 

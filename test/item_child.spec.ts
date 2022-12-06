@@ -2,7 +2,7 @@ import { assert } from 'chai'
 import http from 'http'
 import { PORT } from '../src/config'
 import { start, stop } from '../src/index'
-import { ItemDTO } from '../src/pg-database'
+import { ItemDTO } from '../src/item-dto'
 import { MockDatabase } from './mock-database'
 
 describe('Read Model', () => {

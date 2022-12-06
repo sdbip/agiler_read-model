@@ -1,7 +1,7 @@
 import { PORT } from './config.js'
-import { setupServer } from './server.js'
-import { Database, PGDatabase } from './pg-database.js'
-import { NOTFOUND } from 'dns'
+import { NOT_FOUND, setupServer } from './server.js'
+import { PGDatabase } from './pg-database.js'
+import { Database } from './database.js'
 
 let database: Database = new PGDatabase()
 
@@ -13,7 +13,7 @@ setup.get('/item', async (request) => {
 
 setup.get('/item/:id', async (request) => {
   const id = request.params.id
-  return await database.item(id) ?? NOTFOUND
+  return await database.item(id) ?? NOT_FOUND
 })
 
 setup.get('/item/:id/child', async (request) => {
@@ -23,14 +23,15 @@ setup.get('/item/:id/child', async (request) => {
 })
 
 const server = setup.finalize()
-server.listenAtPort(parseInt(PORT ?? '80') ?? 80)
+const port = parseInt(PORT ?? '80') ?? 80
+server.listenAtPort(port)
 
 process.stdout.write(`\x1B[35mListening on port \x1B[30m${PORT ?? '80'}\x1B[0m\n\n`)
 
 export function start(testDatabase: Database) {
   database = testDatabase
   server.stopListening()
-  server.listenAtPort(parseInt(PORT ?? '80') ?? 80)
+  server.listenAtPort(port)
 }
 
 export function stop() {

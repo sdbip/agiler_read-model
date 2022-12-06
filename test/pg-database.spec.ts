@@ -2,7 +2,8 @@ import { assert } from 'chai'
 import { promises as fs } from 'fs'
 import pg from 'pg'
 import { DATABASE_CONNECTION_STRING } from '../src/config'
-import { ItemDTO, PGDatabase } from '../src/pg-database'
+import { PGDatabase } from '../src/pg-database'
+import { ItemDTO } from '../src/item-dto'
 
 describe('Database Configuration', () => {
 

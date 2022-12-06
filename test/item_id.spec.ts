@@ -17,6 +17,15 @@ describe('Read Model', () => {
   describe('GET /item/:id', () => {
 
     it('returns status code 200', async () => {
+
+      database.itemToReturn = {
+        id: 'id',
+        type: 'Task',
+        title: 'Item',
+        progress: 'notStarted',
+        parentId: 'parent',
+      }
+
       const response = await getItem('some_id')
       assert.equal(response.statusCode, 200)
     })

@@ -1,24 +1,8 @@
-import { DATABASE_CONNECTION_STRING } from './config.js'
 import pg from 'pg'
-
-export type ItemSpecification = {
-  progress?: string | string[]
-  parent?: string | null
-  type?: string | string[]
-};
-
-export type ItemDTO = {
-  id: string
-  type: string
-  title: string
-  progress: string
-  parentId?: string
-}
-
-export interface Database {
-  item(id: string): Promise<ItemDTO | undefined>
-  itemsWithSpecification(specification: ItemSpecification): Promise<ItemDTO[]>
-}
+import { DATABASE_CONNECTION_STRING } from './config.js'
+import { Database } from './database.js'
+import { ItemDTO } from './item-dto.js'
+import { ItemSpecification } from './item-specification.js'
 
 export class PGDatabase implements Database {
   async item(id: string): Promise<ItemDTO | undefined> {
