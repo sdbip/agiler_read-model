@@ -26,7 +26,7 @@ const server = setup.finalize()
 const port = parseInt(PORT ?? '80') ?? 80
 server.listenAtPort(port)
 
-process.stdout.write(`\x1B[35mListening on port \x1B[30m${PORT ?? '80'}\x1B[0m\n\n`)
+process.stdout.write(`\x1B[35mListening on port \x1B[30m${port}\x1B[0m\n\n`)
 
 export function start(testDatabase: Database) {
   database = testDatabase

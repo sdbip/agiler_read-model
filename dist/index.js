@@ -32,7 +32,7 @@ setup.get('/item/:id/child', (request) => __awaiter(void 0, void 0, void 0, func
 const server = setup.finalize();
 const port = (_a = parseInt(PORT !== null && PORT !== void 0 ? PORT : '80')) !== null && _a !== void 0 ? _a : 80;
 server.listenAtPort(port);
-process.stdout.write(`\x1B[35mListening on port \x1B[30m${PORT !== null && PORT !== void 0 ? PORT : '80'}\x1B[0m\n\n`);
+process.stdout.write(`\x1B[35mListening on port \x1B[30m${port}\x1B[0m\n\n`);
 export function start(testDatabase) {
     database = testDatabase;
     server.stopListening();
