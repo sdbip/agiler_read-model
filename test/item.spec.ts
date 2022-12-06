@@ -79,7 +79,7 @@ describe('Read Model', () => {
 
     it('requests only items of the specified type', async () => {
       database.itemsToReturn = []
-      const response = await get(`http://localhost:${PORT}/item?type=Feature|Epic`)
+      const response = await getAll('type=Feature|Epic')
       assert.equal(response.statusCode, 200)
 
       assert.deepInclude(
@@ -87,15 +87,14 @@ describe('Read Model', () => {
         { type: [ 'Feature', 'Epic' ] })
     })
 
-    function getAll() { return get(`http://localhost:${PORT}/item`) }
+    function getAll(query?: string) { return get(`http://localhost:${PORT}/item?${query ?? ''}`) }
   })
 })
 
 function get(url: string) {
   return new Promise<ResponseData>((resolve) => {
     const request = http.get(url, async response => {
-      const result = await readResponse(response)
-      resolve(result)
+      resolve(await readResponse(response))
     })
 
     request.end()
