@@ -5,12 +5,12 @@ import pg from 'pg'
 import { DATABASE, PORT } from '../src/config'
 import { close } from '../src/index'
 
-describe('GET /', () => {
+describe('Read Model', () => {
 
   before(async () => {
     const data = await fs.readFile('./test/items.sql')
     const schemaSQL = data.toString('utf-8')
-    
+
     const client = new pg.Client({ database: DATABASE })
     await client.connect()
     await client.query(schemaSQL)
@@ -21,14 +21,54 @@ describe('GET /', () => {
     close()
   })
 
-  it('can retrieve all items', async () => {
-    const response = await get(`http://localhost:${PORT}`)
+  describe('GET /item', () => {
 
-//    assert.equal(response.statusCode, 200)
-    assert.deepEqual(response.content, { message: 'alive' })
+    it('returns status code 200', async () => {
+      const response = await getAll()
+      assert.equal(response.statusCode, 200)
+    })
+
+    it('returns all items', async () => {
+      const response = await getAll()
+      assert.deepEqual(response.content, [
+        {
+          id: 'epic',
+          type: 'Epic',
+          title: 'Epic Feature',
+          progress: 'notStarted',
+          parent_id: null,
+          assignee: null,
+        },
+        {
+          id: 'mmf',
+          type: 'Feature',
+          title: 'MMF',
+          progress: 'notStarted',
+          parent_id: 'epic',
+          assignee: null,
+        },
+        {
+          id: 'story',
+          type: 'Story',
+          title: 'Parent Story',
+          progress: 'notStarted',
+          parent_id: null,
+          assignee: null,
+        },
+        {
+          id: 'subtask',
+          type: 'Task',
+          title: 'Task',
+          progress: 'notStarted',
+          parent_id: 'story',
+          assignee: null,
+        },
+      ])
+    })
+
+    function getAll() { return get(`http://localhost:${PORT}/item`) }
   })
 })
-
 
 function get(url: string) {
   return new Promise<ResponseData>((resolve) => {
@@ -55,9 +95,17 @@ function readResponse(response: http.IncomingMessage): Promise<ResponseData> {
     })
     response.on('end', () => {
       resolve({
-        statusCode: response.statusCode as number,
-        content: JSON.parse(result),
+        statusCode: response.statusCode ?? -1,
+        content: parse(result),
       })
     })
   })
+
+  function parse(json: string) {
+    try {
+      return JSON.parse(json)
+    } catch {
+      return json
+    }
+  }
 }
