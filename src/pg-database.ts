@@ -1,8 +1,16 @@
 import { DATABASE_CONNECTION_STRING } from './config.js'
 import pg from 'pg'
 
+export type ItemDTO = {
+  id: string
+  type: string
+  title: string
+  progress: string
+  parent_id: string | null
+}
+
 export interface Database {
-  items(): Promise<any[]>
+  items(): Promise<ItemDTO[]>
 }
 
 export class PGDatabase implements Database {

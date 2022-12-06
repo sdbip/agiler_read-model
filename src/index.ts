@@ -18,6 +18,6 @@ export function close() {
   server.stopListening()
 }
 
-export function overrideDatabase(testDatabase: PGDatabase) {
+export function overrideDatabase(testDatabase: Database) {
   database = testDatabase
 }

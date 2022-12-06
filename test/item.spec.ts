@@ -1,20 +1,17 @@
 import { assert } from 'chai'
 import { promises as fs } from 'fs'
 import http from 'http'
-import pg from 'pg'
-import { DATABASE_CONNECTION_STRING, PORT } from '../src/config'
-import { close } from '../src/index'
+import { PORT } from '../src/config'
+import { close, overrideDatabase } from '../src/index'
+import { ItemDTO } from '../src/pg-database'
+import { MockDatabase } from './mock-database'
 
 describe('Read Model', () => {
 
-  before(async () => {
-    const data = await fs.readFile('./test/items.sql')
-    const schemaSQL = data.toString('utf-8')
+  const database = new MockDatabase()
 
-    const client = new pg.Client(DATABASE_CONNECTION_STRING)
-    await client.connect()
-    await client.query(schemaSQL)
-    await client.end()
+  before(async () => {
+    overrideDatabase(database)
   })
 
   after(() => {
@@ -29,15 +26,14 @@ describe('Read Model', () => {
     })
 
     it('returns all items', async () => {
-      const response = await getAll()
-      assert.deepEqual(response.content, [
+
+      const items: ItemDTO[] = [
         {
           id: 'epic',
           type: 'Epic',
           title: 'Epic Feature',
           progress: 'notStarted',
           parent_id: null,
-          assignee: null,
         },
         {
           id: 'mmf',
@@ -45,7 +41,6 @@ describe('Read Model', () => {
           title: 'MMF',
           progress: 'notStarted',
           parent_id: 'epic',
-          assignee: null,
         },
         {
           id: 'story',
@@ -53,7 +48,6 @@ describe('Read Model', () => {
           title: 'Parent Story',
           progress: 'notStarted',
           parent_id: null,
-          assignee: null,
         },
         {
           id: 'subtask',
@@ -61,9 +55,12 @@ describe('Read Model', () => {
           title: 'Task',
           progress: 'notStarted',
           parent_id: 'story',
-          assignee: null,
         },
-      ])
+      ]
+      database.itemsToReturn = items
+
+      const response = await getAll()
+      assert.deepEqual(response.content, items)
     })
 
     function getAll() { return get(`http://localhost:${PORT}/item`) }
