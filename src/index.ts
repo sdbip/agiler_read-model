@@ -5,8 +5,9 @@ import { Database, PGDatabase } from './pg-database.js'
 let database: Database = new PGDatabase()
 
 const setup = setupServer()
-setup.get('/item', async () => {
-  return database.items()
+setup.get('/item', async (request) => {
+  const type = (request.query.type as string)?.split('|')
+  return database.items({ progress: 'notStarted', parent: null, type })
 })
 
 const server = setup.finalize()

@@ -63,6 +63,33 @@ describe('Read Model', () => {
       assert.deepEqual(response.content, items)
     })
 
+    it('requests open items only', async () => {
+      await getAll()
+
+      assert.deepInclude(
+        database.lastRequestedSpecfication,
+        { progress: 'notStarted' })
+    })
+
+    it('requests unparented items only', async () => {
+      const response = await getAll()
+
+      assert.equal(response.statusCode, 200)
+      assert.deepInclude(
+        database.lastRequestedSpecfication,
+        { parent: null })
+    })
+
+    it('requests only items of the specified type', async () => {
+      database.itemsToReturn = []
+      const response = await get(`http://localhost:${PORT}/item?type=Feature|Epic`)
+      assert.equal(response.statusCode, 200)
+
+      assert.deepInclude(
+        database.lastRequestedSpecfication,
+        { type: [ 'Feature', 'Epic' ] })
+    })
+
     function getAll() { return get(`http://localhost:${PORT}/item`) }
   })
 })
