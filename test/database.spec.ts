@@ -1,12 +1,10 @@
 import { assert } from 'chai'
 import pg from 'pg'
-import { DATABASE } from '../src/config'
+import { DATABASE_CONNECTION_STRING } from '../src/config'
 
 describe('Database Configuration', () => {
 
-  const client = new pg.Client({
-    database: DATABASE,
-  })
+  const client = new pg.Client(DATABASE_CONNECTION_STRING)
 
   before(async () => {
     await client.connect()
@@ -17,7 +15,7 @@ describe('Database Configuration', () => {
   })
 
   it('has configuration', async () => {
-    assert.exists(DATABASE, 'Configuration missing. Add `export DATABASE=<value>` to .env file')
+    assert.exists(DATABASE_CONNECTION_STRING, 'Configuration key `DATABASE_CONNECTION_STRING` not set. Update your .env file as in the template.')
   })
 
   it('can connect', async () => {

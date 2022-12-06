@@ -2,7 +2,7 @@ import { assert } from 'chai'
 import { promises as fs } from 'fs'
 import http from 'http'
 import pg from 'pg'
-import { DATABASE, PORT } from '../src/config'
+import { DATABASE_CONNECTION_STRING, PORT } from '../src/config'
 import { close } from '../src/index'
 
 describe('Read Model', () => {
@@ -11,7 +11,7 @@ describe('Read Model', () => {
     const data = await fs.readFile('./test/items.sql')
     const schemaSQL = data.toString('utf-8')
 
-    const client = new pg.Client({ database: DATABASE })
+    const client = new pg.Client(DATABASE_CONNECTION_STRING)
     await client.connect()
     await client.query(schemaSQL)
     await client.end()
