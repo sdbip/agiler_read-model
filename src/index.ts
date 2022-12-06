@@ -7,7 +7,7 @@ let database: Database = new PGDatabase()
 const setup = setupServer()
 setup.get('/item', async (request) => {
   const type = (request.query.type as string)?.split('|')
-  return database.items({ progress: 'notStarted', parent: null, type })
+  return database.itemsWithSpecification({ progress: 'notStarted', parent: null, type })
 })
 
 const server = setup.finalize()

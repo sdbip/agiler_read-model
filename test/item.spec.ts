@@ -1,5 +1,4 @@
 import { assert } from 'chai'
-import { promises as fs } from 'fs'
 import http from 'http'
 import { PORT } from '../src/config'
 import { close, overrideDatabase } from '../src/index'
@@ -33,28 +32,26 @@ describe('Read Model', () => {
           type: 'Epic',
           title: 'Epic Feature',
           progress: 'notStarted',
-          parent_id: null,
         },
         {
           id: 'mmf',
           type: 'Feature',
           title: 'MMF',
           progress: 'notStarted',
-          parent_id: 'epic',
+          parentId: 'epic',
         },
         {
           id: 'story',
           type: 'Story',
           title: 'Parent Story',
           progress: 'notStarted',
-          parent_id: null,
         },
         {
           id: 'subtask',
           type: 'Task',
           title: 'Task',
           progress: 'notStarted',
-          parent_id: 'story',
+          parentId: 'story',
         },
       ]
       database.itemsToReturn = items

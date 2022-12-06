@@ -4,7 +4,7 @@ export class MockDatabase implements Database {
   itemsToReturn: ItemDTO[] = []
   lastRequestedSpecfication?: ItemSpecification
 
-  async items(specification: ItemSpecification): Promise<ItemDTO[]> {
+  async itemsWithSpecification(specification: ItemSpecification): Promise<ItemDTO[]> {
     this.lastRequestedSpecfication = specification
     return this.itemsToReturn
   }
