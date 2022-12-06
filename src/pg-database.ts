@@ -22,7 +22,20 @@ export interface Database {
 
 export class PGDatabase implements Database {
   async item(id: string): Promise<ItemDTO | undefined> {
-    return undefined
+
+    const db = new pg.Client(DATABASE_CONNECTION_STRING)
+    await db.connect()
+    const rs = await db.query('SELECT * FROM Items WHERE id = $1', [ id ]) 
+    const result = rs.rows
+    await db.end()
+
+    return result.map(r => ({
+      id: r.id,
+      type: r.type,
+      title: r.title,
+      progress: r.progress,
+      parentId: r.parent_id ?? undefined,
+    } as ItemDTO))[0]
   }
 
   async itemsWithSpecification(specification: ItemSpecification) {

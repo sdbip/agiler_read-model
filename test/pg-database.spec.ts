@@ -25,6 +25,29 @@ describe('Database Configuration', () => {
     await client.end()
   })
 
+  describe('item', () => {
+
+    it('finds stored item', async () => {
+      const item: ItemDTO = {
+        id: 'task',
+        type: 'Task',
+        title: 'Task',
+        progress: 'notStarted',
+        parentId: undefined,
+      }
+      await add(item)
+
+      const returnedItem = await repository.item('task')
+      assert.exists(returnedItem)
+      assert.deepEqual(returnedItem, item)
+    })
+
+    it('returns undefined if not found', async () => {
+      const returnedItem = await repository.item('task')
+      assert.isUndefined(returnedItem)
+    })
+  })
+
   describe('itemsWithSpecification', () => {
 
     it('finds stored tasks', async () => {
