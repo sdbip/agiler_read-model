@@ -10,15 +10,23 @@ setup.get('/item', async (request) => {
   return database.itemsWithSpecification({ progress: 'notStarted', parent: null, type })
 })
 
+setup.get('/item/:id/child', async (request) => {
+  const id = request.params.id
+  const type = (request.query.type as string)?.split('|')
+  return database.itemsWithSpecification({ progress: 'notStarted', parent: id, type })
+})
+
 const server = setup.finalize()
 server.listenAtPort(parseInt(PORT ?? '80') ?? 80)
 
 process.stdout.write(`\x1B[35mListening on port \x1B[30m${PORT ?? '80'}\x1B[0m\n\n`)
 
-export function close() {
+export function start(testDatabase: Database) {
+  database = testDatabase
   server.stopListening()
+  server.listenAtPort(parseInt(PORT ?? '80') ?? 80)
 }
 
-export function overrideDatabase(testDatabase: Database) {
-  database = testDatabase
+export function stop() {
+  server.stopListening()
 }

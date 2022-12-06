@@ -12,13 +12,12 @@ describe('Read Model', () => {
   before(async () => {
     start(database)
   })
-
   after(stop)
 
-  describe('GET /item', () => {
+  describe('GET /item/:id/child', () => {
 
     it('returns status code 200', async () => {
-      const response = await getAll()
+      const response = await getAllChildren('some_id')
       assert.equal(response.statusCode, 200)
     })
 
@@ -30,6 +29,7 @@ describe('Read Model', () => {
           type: 'Epic',
           title: 'Epic Feature',
           progress: 'notStarted',
+          parentId: 'id',
         },
         {
           id: 'mmf',
@@ -54,29 +54,36 @@ describe('Read Model', () => {
       ]
       database.itemsToReturn = items
 
-      const response = await getAll()
+      const response = await getAllChildren('some_id')
       assert.deepEqual(response.content, items)
     })
 
+    it('requests items with the indicated parent id only', async () => {
+      await getAllChildren('id')
+
+      assert.deepInclude(
+        database.lastRequestedSpecfication,
+        { parent: 'id' })
+    })
+
     it('requests open items only', async () => {
-      await getAll()
+      await getAllChildren('some_id')
 
       assert.deepInclude(
         database.lastRequestedSpecfication,
         { progress: 'notStarted' })
     })
 
-    it('requests unparented items only', async () => {
-      const response = await getAll()
+    it('requests items with the indicated parent id only', async () => {
+      await getAllChildren('id')
 
-      assert.equal(response.statusCode, 200)
       assert.deepInclude(
         database.lastRequestedSpecfication,
-        { parent: null })
+        { parent: 'id' })
     })
 
     it('requests only items of the specified type', async () => {
-      const response = await getAll('type=Feature|Epic')
+      const response = await getAllChildren('id', 'type=Feature|Epic')
       assert.equal(response.statusCode, 200)
 
       assert.deepInclude(
@@ -84,7 +91,7 @@ describe('Read Model', () => {
         { type: [ 'Feature', 'Epic' ] })
     })
 
-    function getAll(query?: string) { return get(`http://localhost:${PORT}/item?${query ?? ''}`) }
+    function getAllChildren(parentId: string, query?: string) { return get(`http://localhost:${PORT}/item/${parentId}/child?${query ?? ''}`) }
   })
 })
 
