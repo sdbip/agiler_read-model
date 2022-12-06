@@ -1,6 +1,7 @@
 import { PORT } from './config.js'
 import { setupServer } from './server.js'
 import { Database, PGDatabase } from './pg-database.js'
+import { NOTFOUND } from 'dns'
 
 let database: Database = new PGDatabase()
 
@@ -8,6 +9,11 @@ const setup = setupServer()
 setup.get('/item', async (request) => {
   const type = (request.query.type as string)?.split('|')
   return database.itemsWithSpecification({ progress: 'notStarted', parent: null, type })
+})
+
+setup.get('/item/:id', async (request) => {
+  const id = request.params.id
+  return await database.item(id) ?? NOTFOUND
 })
 
 setup.get('/item/:id/child', async (request) => {

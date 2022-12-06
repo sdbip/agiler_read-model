@@ -16,10 +16,15 @@ export type ItemDTO = {
 }
 
 export interface Database {
+  item(id: string): Promise<ItemDTO | undefined>
   itemsWithSpecification(specification: ItemSpecification): Promise<ItemDTO[]>
 }
 
 export class PGDatabase implements Database {
+  async item(id: string): Promise<ItemDTO | undefined> {
+    return undefined
+  }
+
   async itemsWithSpecification(specification: ItemSpecification) {
     const clause = whereClause(specification)
     const query = clause ? `SELECT * FROM Items WHERE ${clause}` : 'SELECT * FROM Items'
