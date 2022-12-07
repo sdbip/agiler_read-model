@@ -9,7 +9,7 @@ describe('Database Configuration', () => {
   before(async () => {
     await client.connect()
   })
-  
+
   after(async () => {
     client.end()
   })

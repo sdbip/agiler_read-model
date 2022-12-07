@@ -9,7 +9,7 @@ export class PGDatabase implements Database {
 
     const db = new pg.Client(DATABASE_CONNECTION_STRING)
     await db.connect()
-    const rs = await db.query('SELECT * FROM Items WHERE id = $1', [ id ]) 
+    const rs = await db.query('SELECT * FROM Items WHERE id = $1', [ id ])
     const result = rs.rows
     await db.end()
 
@@ -31,7 +31,7 @@ export class PGDatabase implements Database {
     const rs = await db.query(
       query,
       parameters(specification))
- 
+
     const result = rs.rows
     await db.end()
     return result.map(r => ({
