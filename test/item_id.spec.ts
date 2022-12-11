@@ -1,8 +1,8 @@
 import { assert } from 'chai'
 import http from 'http'
-import { PORT } from '../src/config'
-import { start, stop } from '../src/index'
-import { MockDatabase } from './mock-database'
+import { PORT } from '../src/config.js'
+import { start, stop } from '../src/index.js'
+import { MockDatabase } from './mock-database.js'
 
 describe('Read Model', () => {
 

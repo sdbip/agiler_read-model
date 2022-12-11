@@ -1,6 +1,6 @@
 import { assert } from 'chai'
 import pg from 'pg'
-import { DATABASE_CONNECTION_STRING } from '../src/config'
+import { DATABASE_CONNECTION_STRING } from '../src/config.js'
 
 describe('Database Configuration', () => {
 
