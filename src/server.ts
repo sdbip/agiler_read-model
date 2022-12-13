@@ -1,10 +1,19 @@
 import express from 'express'
+import cors from 'cors'
 import { createServer, Server as HTTPServer } from 'http'
+
+export enum StatusCode {
+  OK = 200,
+  Created = 201,
+  NoContent = 204,
+  NotFound = 404,
+  InternalServerError = 500,
+}
 
 export type Request = express.Request
 export type Handler = (request: Request) => Promise<string | object>
 export interface Response {
-  statusCode?: number
+  statusCode?: StatusCode | number
   content?: string | object
 }
 interface NormalizedResponse {
@@ -19,10 +28,12 @@ export interface ServerSetup {
   public(root: string): void
 }
 
-export const NOT_FOUND: Response = { statusCode: 404 }
+export const NOT_FOUND: Response = { statusCode: StatusCode.NotFound }
+export const NO_CONTENT: Response = { statusCode: StatusCode.NoContent }
 
-export const setupServer = (): ServerSetup => {
+export const setupServer = (corsRules: cors.CorsOptions): ServerSetup => {
   const app = express()
+  app.use(cors(corsRules))
 
   function wrapHandler(handler: Handler) {
     return async (request: express.Request, response: express.Response) => {
@@ -37,7 +48,7 @@ export const setupServer = (): ServerSetup => {
         const { message } = thrown as Error
         const error = { message }
         return {
-          statusCode: 500,
+          statusCode: StatusCode.InternalServerError,
           content: { error },
         }
       }
@@ -45,13 +56,13 @@ export const setupServer = (): ServerSetup => {
 
     function toResponse(result: string | object): NormalizedResponse {
       if (typeof result === 'string') return {
-        statusCode: 200,
+        statusCode: StatusCode.OK,
         content: result,
       }
 
       const responseData = result as Response
       return {
-        statusCode: responseData.statusCode ?? 200,
+        statusCode: responseData.statusCode ?? StatusCode.OK,
         content: typeof responseData.content === 'string'
           ? responseData.content
           : JSON.stringify('content' in responseData
@@ -62,7 +73,7 @@ export const setupServer = (): ServerSetup => {
 
     function outputResult(response: express.Response, result: NormalizedResponse) {
       const responseData = result as Response
-      response.statusCode = responseData?.statusCode ?? 200
+      response.statusCode = responseData?.statusCode ?? StatusCode.OK
 
       response.end(result.content)
     }

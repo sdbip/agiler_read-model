@@ -5,7 +5,8 @@ import { Database } from './database.js'
 
 let database: Database = new PGDatabase()
 
-const setup = setupServer()
+const setup = setupServer({ origin: '*' })
+
 setup.get('/item', async (request) => {
   const type = (request.query.type as string)?.split('|')
   return database.itemsWithSpecification({ progress: 'notStarted', parent: null, type })
