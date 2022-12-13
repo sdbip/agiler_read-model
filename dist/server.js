@@ -8,10 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import express from 'express';
+import cors from 'cors';
 import { createServer } from 'http';
-export const NOT_FOUND = { statusCode: 404 };
+export var StatusCode;
+(function (StatusCode) {
+    StatusCode[StatusCode["OK"] = 200] = "OK";
+    StatusCode[StatusCode["Created"] = 201] = "Created";
+    StatusCode[StatusCode["NoContent"] = 204] = "NoContent";
+    StatusCode[StatusCode["NotFound"] = 404] = "NotFound";
+    StatusCode[StatusCode["InternalServerError"] = 500] = "InternalServerError";
+})(StatusCode || (StatusCode = {}));
+export const NOT_FOUND = { statusCode: StatusCode.NotFound };
+export const NO_CONTENT = { statusCode: StatusCode.NoContent };
 export const setupServer = () => {
     const app = express();
+    app.use(cors());
     function wrapHandler(handler) {
         return (request, response) => __awaiter(this, void 0, void 0, function* () {
             const result = yield callHandler(request);
@@ -26,7 +37,7 @@ export const setupServer = () => {
                     const { message } = thrown;
                     const error = { message };
                     return {
-                        statusCode: 500,
+                        statusCode: StatusCode.InternalServerError,
                         content: { error },
                     };
                 }
@@ -36,12 +47,12 @@ export const setupServer = () => {
             var _a;
             if (typeof result === 'string')
                 return {
-                    statusCode: 200,
+                    statusCode: StatusCode.OK,
                     content: result,
                 };
             const responseData = result;
             return {
-                statusCode: (_a = responseData.statusCode) !== null && _a !== void 0 ? _a : 200,
+                statusCode: (_a = responseData.statusCode) !== null && _a !== void 0 ? _a : StatusCode.OK,
                 content: typeof responseData.content === 'string'
                     ? responseData.content
                     : JSON.stringify('content' in responseData
@@ -52,7 +63,8 @@ export const setupServer = () => {
         function outputResult(response, result) {
             var _a;
             const responseData = result;
-            response.statusCode = (_a = responseData === null || responseData === void 0 ? void 0 : responseData.statusCode) !== null && _a !== void 0 ? _a : 200;
+            response.statusCode = (_a = responseData === null || responseData === void 0 ? void 0 : responseData.statusCode) !== null && _a !== void 0 ? _a : StatusCode.OK;
+            response.setHeader('Content-Type', 'application/json');
             response.end(result.content);
         }
     }
